@@ -1,0 +1,92 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: #ffffff;
+}
+
+body {
+  background-color: black;
+}
+
+/* Navbar */
+.navbar-container {
+  height: 20vh;
+  width: 100%;
+  display: flex;
+}
+
+.youtube-logo {
+  width: 9rem;
+  margin-top: -3.5rem;
+  cursor: pointer;
+}
+.form {
+  margin: auto;
+  margin-top: 1rem;
+  width: 40%;
+  background: transparent;
+  border: 1px solid grey;
+  border-radius: 50px;
+  padding: 0.5rem 0;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  background: transparent;
+  width: 90%;
+  outline: none;
+  border: none;
+  padding-left: 1rem;
+}
+
+.svg {
+  /* height: 100%;
+  width: 7%; */
+  background-color: grey;
+  color: #ffffff;
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
+/* Navbar ends here*/
+
+/* video card  */
+
+.video-card-container {
+  display: grid;
+  grid-template-columns: repeat(1fr, 4);
+  gap: 1rem;
+  width: 25%;
+  height: 25vh;
+  margin-top: 10rem;
+}
+
+.thumbnail {
+  width: 150px;
+  height: 90px;
+}
+
+.video-card-details {
+}
+
+.title {
+}
+
+.channel {
+}
+
+/* .channel-logo {
+}
+
+.views-ago-container {
+}
+
+.views {
+}
+
+.ago {
+} */
+
+/* video card ends here */
