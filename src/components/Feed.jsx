@@ -1,11 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import VideoCard from './VideoCard';
 
 const Feed = () => {
+  const [data, setData] = useState({});
   const query = useSelector((state) => state.query);
   console.log(query);
+
   const hitTheApi = async () => {
     const options = {
       method: 'GET',
@@ -25,36 +27,30 @@ const Feed = () => {
 
     try {
       const response = await axios.request(options);
-      console.log(response.data);
-      return response.data;
+      setData(response.data);
+      // return response.data;
     } catch (error) {
       console.error('error while hitting the api: ', error);
-      return null;
+      // return null;
     }
   };
 
-  const call = async () => {
-    const result = await hitTheApi();
-    return result;
-  };
-
-  let data = {};
-
   useEffect(() => {
-    data = call();
+    hitTheApi();
   }, [query]);
 
+  console.log(data);
+  // console.log(data.items);
   return (
     <div className='feed-container'>
       {data?.items?.map((item) => {
         return (
-          <div id={item.id.videoId} className='video'>
-            <VideoCard
-              thumbnail={item.snippet.thumbnails.default.url}
-              title={item.snippet.title}
-              channel={item.snippet.channelTitle}
-            />
-          </div>
+          <VideoCard
+            key={item.id.videoId}
+            thumbnail={item.snippet.thumbnails.default.url}
+            title={item.snippet.title}
+            channel={item.snippet.channelTitle}
+          />
         );
       })}
     </div>

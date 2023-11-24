@@ -55,26 +55,25 @@ body {
 /* video card  */
 
 .video-card-container {
-  display: grid;
-  grid-template-columns: repeat(1fr, 4);
-  gap: 1rem;
-  width: 25%;
-  height: 25vh;
-  margin-top: 10rem;
+  display: inline-block; /* Display as inline block to allow multiple cards in a row */
+  margin-right: 20px; /* Adjust spacing between cards */
+  width: calc(25% - 20px); /* Set width for each card */
 }
 
 .thumbnail {
-  width: 150px;
-  height: 90px;
+  width: 100%;
+  height: auto;
 }
 
 .video-card-details {
+  padding: 10px; /* Add padding for details */
 }
 
-.title {
-}
-
-.channel {
+.feed-container {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping for multiple rows */
+  justify-content: space-between;
+  /* Add padding, margin, or other styles for the parent container */
 }
 
 /* .channel-logo {

@@ -4,7 +4,7 @@ function App() {
     <>
       <Navbar />
       <Feed />
-      <Channel />
+      {/* <Channel /> */}
     </>
   );
 }
