@@ -11,7 +11,7 @@ const Navbar = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(setQuery(state));
-    setState('');
+    // setState('');
   };
 
   return (

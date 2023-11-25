@@ -63,29 +63,30 @@ body {
 .thumbnail {
   width: 100%;
   height: auto;
+  cursor: pointer;
 }
 
 .video-card-details {
   padding: 10px; /* Add padding for details */
+  margin-bottom: 0.4rem;
 }
 
 .feed-container {
   display: flex;
   flex-wrap: wrap; /* Allow wrapping for multiple rows */
   justify-content: space-between;
+  margin-left: 20px;
   /* Add padding, margin, or other styles for the parent container */
 }
-
-/* .channel-logo {
+.title {
+  cursor: pointer;
 }
-
-.views-ago-container {
-}
-
-.views {
-}
-
 .ago {
-} */
+  margin-top: 0.4rem;
+}
+
+.channel {
+  margin-top: 0.4rem;
+}
 
 /* video card ends here */

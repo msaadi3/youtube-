@@ -1,58 +1,98 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import axios from 'axios';
 import VideoCard from './VideoCard';
+import YouTubeVideoPlayer from './YouTubeVideoPlayer.jsx';
+import Spinner from '../utils/Spinner.jsx';
+import calculateTimeDifference from '../utils/calculateTime.js';
+import { hitApi } from '../utils/fetchDataFromAPI.js';
 
 const Feed = () => {
-  const [data, setData] = useState({});
-  const query = useSelector((state) => state.query);
-  console.log(query);
+  const [data, setData] = useState({ items: [], nextPageToken: '' });
+  const [upperLoading, setUpperLoading] = useState(false);
+  const [lowerLoading, setLowerLoading] = useState(false);
+  const [selectYouTubeVideoId, setSelectYouTubeVideoId] = useState(null);
 
-  const hitTheApi = async () => {
-    const options = {
-      method: 'GET',
-      url: 'https://youtube-v31.p.rapidapi.com/search',
-      params: {
-        q: query,
-        part: 'snippet,id',
-        regionCode: 'US',
-        maxResults: '50',
-        order: 'date',
-      },
-      headers: {
-        'X-RapidAPI-Key': import.meta.env.VITE_RAPID_API_KEY,
-        'X-RapidAPI-Host': 'youtube-v31.p.rapidapi.com',
-      },
+  const query = useSelector((state) => state.query);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setUpperLoading(true);
+        const url = `search?q=${query}&part=snippet,id&regionCode=PK&nextPageToken=${data.nextPageToken}`;
+        const response = await hitApi(url);
+        setData(() => ({
+          items: response?.data?.items,
+          nextPageToken: response?.data?.nextPageToken,
+        }));
+      } catch (error) {
+        console.error('Error fetching data: ', error);
+      } finally {
+        setUpperLoading(false);
+      }
     };
 
-    try {
-      const response = await axios.request(options);
-      setData(response.data);
-      // return response.data;
-    } catch (error) {
-      console.error('error while hitting the api: ', error);
-      // return null;
+    fetchData();
+  }, [query]);
+
+  const handleInfiniteScroll = async () => {
+    if (
+      window.innerHeight + document.documentElement.scrollTop + 1 >=
+      document.documentElement.scrollHeight
+    ) {
+      try {
+        setLowerLoading(true);
+        const url = `search?q=${query}&part=snippet,id&regionCode=PK&nextPageToken=${data.nextPageToken}`;
+        const response = await hitApi(url);
+        setData((prevData) => ({
+          items: [...prevData.items, ...response?.data?.items],
+          nextPageToken: response?.data?.nextPageToken,
+        }));
+      } catch (error) {
+        console.error('Error fetching data: ', error);
+      } finally {
+        setLowerLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    hitTheApi();
-  }, [query]);
+    window.addEventListener('scroll', handleInfiniteScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleInfiniteScroll);
+    };
+  }, []);
 
-  console.log(data);
-  // console.log(data.items);
+  const handleVideoClick = (videoId) => {
+    setSelectYouTubeVideoId(videoId);
+  };
+  let id = 0;
   return (
     <div className='feed-container'>
-      {data?.items?.map((item) => {
-        return (
-          <VideoCard
-            key={item.id.videoId}
-            thumbnail={item.snippet.thumbnails.default.url}
-            title={item.snippet.title}
-            channel={item.snippet.channelTitle}
-          />
-        );
-      })}
+      {upperLoading ? (
+        <Spinner />
+      ) : (
+        <>
+          {data?.items?.map((item) => {
+            const publishedAt = item.snippet.publishedAt;
+            const getPublishedDate = publishedAt.split('T')[0];
+            const howLongAgo = calculateTimeDifference(getPublishedDate);
+            return (
+              <VideoCard
+                key={++id}
+                thumbnail={item.snippet.thumbnails.high.url}
+                title={item.snippet.title}
+                channel={item.snippet.channelTitle}
+                ago={howLongAgo}
+                handleVideoClick={() => handleVideoClick(item.id.videoId)}
+              />
+            );
+          })}
+          {selectYouTubeVideoId && (
+            <YouTubeVideoPlayer videoId={selectYouTubeVideoId} />
+          )}
+          {lowerLoading && <Spinner />}
+        </>
+      )}
     </div>
   );
 };

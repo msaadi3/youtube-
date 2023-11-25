@@ -12,21 +12,13 @@ const options = {
     }
 };
 
-export const fetchData = async (url) => {
-    await axios.get(`${BASE_URL}/${url}`, options)
-        .then((response) => {
-            console.log(response.data)
-            // return response.data
-        })
-        .catch((error) => {
-            console.log(error)
-        })
-
-    // try {
-    //     const response = await axios.get(`${BASE_URL}/${url}`, options);
-    //     const {data} = await axios.get(`${BASE_URL}/${url}`, options);
-    //     console.log(response.data); return data 
-    // } catch (error) {
-    //     console.error(error);
-    // }
+export const hitApi = async (url) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/${url}`, options);
+        console.log(response);
+        return response
+    } catch (error) {
+        console.error(error);
+        return null
+    }
 }
