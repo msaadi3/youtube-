@@ -1,18 +1,11 @@
-const VideoCard = ({ thumbnail, title, channel, ago, handleVideoClick }) => {
+const VideoCard = ({ thumbnail, title, channel, ago }) => {
   return (
     <div className='video-card-container'>
-      <img
-        className='thumbnail'
-        src={thumbnail}
-        alt='thumbnail'
-        onClick={handleVideoClick}
-      />
+      <img className='thumbnail' src={thumbnail} alt='thumbnail' />
       <div className='video-card-details'>
-        <p className='title' onClick={handleVideoClick}>
-          {title}
-        </p>
-        <p className='ago'> {ago}</p>
-        <p className='channel'>{channel}</p>
+        <p className='title'>{title}</p>
+        {ago && <p className='ago'> {ago}</p>}
+        {channel && <p className='channel'>{channel}</p>}
       </div>
     </div>
   );
