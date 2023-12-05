@@ -6,7 +6,6 @@
 
 
 import Channel from './Channel'
-import ChannelAbout from './ChannelAbout'
 import ChannelVideos from './ChannelVideos'
 import Feed from './Feed'
 import Navbar from './Navbar'
@@ -14,4 +13,4 @@ import VideoCard from './VideoCard'
 import YouTubeVideoPlayer from './YouTubeVideoPlayer'
 
 
-export { Channel, ChannelAbout, ChannelVideos, Feed, Navbar, VideoCard, YouTubeVideoPlayer }
+export { Channel, ChannelVideos, Feed, Navbar, VideoCard, YouTubeVideoPlayer }

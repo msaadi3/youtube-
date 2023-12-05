@@ -1,6 +1,9 @@
+import React, { useState, useEffect } from 'react';
 import { fetchDataFromAPI } from '../utils/fetchDataFromAPI';
 import Spinner from '../utils/Spinner.jsx';
 import { VideoCard } from './index.js';
+import calculateTimeDifference from '../utils/calculateTime.js';
+import { Box } from '@mui/material';
 
 const ChannelVideos = ({ channelId }) => {
   // states
@@ -11,17 +14,24 @@ const ChannelVideos = ({ channelId }) => {
   });
   const [upperLoading, setUpperLoading] = useState(false);
   const [lowerLoading, setLowerLoading] = useState(false);
+  const [countNumberOfResults, setCountNumberOfResults] = useState(0);
 
   // getChannelVideos | function to fetchDataFromAPI
-  let countNumberOfResults = 0;
-  const getChannelVideos = async (channelId) => {
-    if (countNumberOfResults >= channelVideos.totalResults) return;
 
-    countNumberOfResults += 50;
-    const url = `search?part=snippet,id&maxResults=50&channelId=${channelId}`;
+  const getChannelVideos = async (channelId) => {
+    if (
+      channelVideos.totalResults != 0 &&
+      countNumberOfResults >= channelVideos.totalResults
+    ) {
+      return;
+    }
+
+    setCountNumberOfResults((prev) => prev + 50); // 50 is the max number of results per request.
+    const url = `search?part=snippet,id&maxResults=50&order=date&channelId=${channelId}`;
     const response = await fetchDataFromAPI(url);
-    setChannelVideos(() => ({
-      items: response?.data?.items,
+    console.log('channelVideos ', response);
+    setChannelVideos((prevData) => ({
+      items: [...prevData.items, ...response?.data?.items],
       nextPageToken: response?.data?.nextPageToken,
       totalResults: response?.data?.pageInfo?.totalResults,
     }));
@@ -52,20 +62,40 @@ const ChannelVideos = ({ channelId }) => {
   }, []);
 
   return (
-    <>
+    <Box
+      sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        ml: '20px',
+        // width: '100%',
+        // height: '100%',
+      }}
+    >
       {upperLoading ? (
         <Spinner />
       ) : (
-        channelVideos.items.map((video, index) => (
-          <VideoCard
-            key={index}
-            thumbnail={video.snippet.thumbnails.high}
-            title={video.snippet.title}
-          />
-        ))
+        <>
+          {channelVideos.items.map((video, index) => {
+            const publishedAt = video?.snippet?.publishedAt;
+            const getPublishedDate = publishedAt?.split('T')[0];
+            const howLongAgo = getPublishedDate
+              ? calculateTimeDifference(getPublishedDate)
+              : null;
+            return (
+              <VideoCard
+                key={index}
+                thumbnail={video.snippet.thumbnails.high.url}
+                title={video.snippet.title}
+                ago={howLongAgo}
+                videoId={video.id.videoId}
+              />
+            );
+          })}
+          {lowerLoading && <Spinner />}
+        </>
       )}
-      {lowerLoading && <Spinner />}
-    </>
+    </Box>
   );
 };
 
