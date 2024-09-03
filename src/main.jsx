@@ -11,6 +11,7 @@ import {
 } from 'react-router-dom';
 
 import { Feed, Channel, YouTubeVideoPlayer } from './components/index.js';
+import { CheckedProvider } from './CheckedContext.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,5 +25,7 @@ const router = createBrowserRouter(
 );
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <RouterProvider router={router} />
+  <CheckedProvider>
+    <RouterProvider router={router} />
+  </CheckedProvider>
 );

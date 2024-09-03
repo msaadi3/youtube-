@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import youtubeLogo from '../assets/YouTube.svg';
-import { MyDrawer } from '../muiComponents/MyDrawer';
 import IconButton from '@mui/material/IconButton';
 import { Box } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
-import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { useChecked } from '../CheckedContext.jsx';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 
 const Navbar = () => {
   const [state, setState] = useState('');
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -22,8 +23,11 @@ const Navbar = () => {
     }
   };
 
-  const handleDrawerOpen = () => {
-    setIsDrawerOpen(true);
+  // toggle button for distraction free youtube
+  const { checked, setChecked } = useChecked();
+  const handleChange = (event) => {
+    // setChecked(event.target.checked);
+    setChecked(!checked);
   };
 
   return (
@@ -40,16 +44,10 @@ const Navbar = () => {
         mb: 2,
       }}
     >
-      <IconButton onClick={handleDrawerOpen}>
-        <MenuIcon color='primary' />
-      </IconButton>
-      <MyDrawer isDrawerOpen={isDrawerOpen} setIsDrawerOpen={setIsDrawerOpen} />
       <Link to='/'>
         <Box
           component='img'
           sx={{
-            // height: 233,
-            // width: 350,
             height: '10vh',
             width: '7.5rem',
             cursor: 'pointer',
@@ -73,10 +71,6 @@ const Navbar = () => {
           bgcolor: 'black',
           color: 'white',
           margin: 'auto',
-          // borderRadius: 20,
-          // border: '1px solid #e3e3e3',
-          // border: '1px solid white',
-          // borderRadius: '35px',
         }}
       >
         <InputBase
@@ -95,6 +89,12 @@ const Navbar = () => {
           <SearchIcon />
         </IconButton>
       </Paper>
+      <FormGroup>
+        <FormControlLabel
+          control={<Switch checked={checked} onChange={handleChange} />}
+          label={`${checked ? 'Full YouTube' : 'Distraction free YouTube'}`}
+        />
+      </FormGroup>
     </Box>
   );
 };

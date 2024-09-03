@@ -6,6 +6,7 @@ import { fetchDataFromAPI } from '../utils/fetchDataFromAPI.js';
 import { Box, Avatar, Typography, Stack } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { useChecked } from '../CheckedContext.jsx';
 
 const Feed = () => {
   const [data, setData] = useState({ items: [], nextPageToken: '' });
@@ -13,6 +14,7 @@ const Feed = () => {
   const [lowerLoading, setLowerLoading] = useState(false);
 
   const { searchTerm } = useParams();
+  const { checked } = useChecked();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,8 +28,17 @@ const Feed = () => {
       setUpperLoading(false);
     };
 
-    fetchData();
-  }, [searchTerm]);
+    if (!checked && searchTerm !== '') {
+      fetchData();
+    }
+  }, [searchTerm, checked]);
+
+  // Clear data when `checked` becomes true
+  useEffect(() => {
+    if (checked && searchTerm == null) {
+      setData({ items: [], nextPageToken: '' }); // Clear the data
+    }
+  }, [checked]);
 
   const handleInfiniteScroll = async () => {
     if (

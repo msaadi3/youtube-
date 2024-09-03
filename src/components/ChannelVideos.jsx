@@ -68,8 +68,6 @@ const ChannelVideos = ({ channelId }) => {
         flexWrap: 'wrap',
         justifyContent: 'space-between',
         ml: '20px',
-        // width: '100%',
-        // height: '100%',
       }}
     >
       {upperLoading ? (

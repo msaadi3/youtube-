@@ -6,8 +6,10 @@ import { fetchDataFromAPI } from '../utils/fetchDataFromAPI';
 import Spinner from '../utils/Spinner';
 import { VideoCard } from './index';
 import calculateTimeDifference from '../utils/calculateTime.js';
+import { useChecked } from '../CheckedContext.jsx';
+import { Link } from 'react-router-dom';
 
-const YouTubeVideoPlayer = ({ channelLogo, subscribers }) => {
+const YouTubeVideoPlayer = () => {
   const [videoDetails, setVideoDetails] = useState(null);
   const [suggestedVideos, setSuggestedVideos] = useState({
     items: [],
@@ -22,6 +24,7 @@ const YouTubeVideoPlayer = ({ channelLogo, subscribers }) => {
   const url = `https://www.youtube.com/watch?v=${videoId}`;
 
   //  fetch suggested videos
+  const { checked } = useChecked();
   const getSuggestedVideos = async () => {
     if (
       suggestedVideos.totalResults != 0 &&
@@ -51,29 +54,43 @@ const YouTubeVideoPlayer = ({ channelLogo, subscribers }) => {
   };
 
   useEffect(() => {
-    setUpperLoading(true);
-    getSuggestedVideos();
     getVideoDetails();
-    setUpperLoading(false);
-  }, [videoId]);
+
+    if (!checked) {
+      setUpperLoading(true);
+      getSuggestedVideos().finally(() => setUpperLoading(false));
+    }
+  }, [videoId, checked]);
+
+  // Clear data when `checked` becomes true
+  useEffect(() => {
+    if (checked) {
+      setSuggestedVideos({ items: [], nextPageToken: '' }); // Clear the data
+    }
+  }, [checked]);
 
   const handleInfiniteScroll = async () => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop + 1 >=
-      document.documentElement.scrollHeight
-    ) {
-      setLowerLoading(true);
-      getSuggestedVideos();
-      setLowerLoading(false);
+    if (!checked) {
+      if (
+        window.innerHeight + document.documentElement.scrollTop + 1 >=
+        document.documentElement.scrollHeight
+      ) {
+        setLowerLoading(true);
+        await getSuggestedVideos();
+        setLowerLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    window.addEventListener('scroll', handleInfiniteScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleInfiniteScroll);
+    const handleScroll = () => {
+      handleInfiniteScroll();
     };
-  }, []);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [checked]);
 
   const getPublishedDateForDescription =
     videoDetails?.snippet?.publishedAt.split('T')[0];
@@ -139,31 +156,36 @@ const YouTubeVideoPlayer = ({ channelLogo, subscribers }) => {
             width: '60%',
           }}
         >
-          <Stack sx={{ /* mt: { md: -25, lg: -35 }*/ mt: -25 }}>
+          <Stack sx={{ mt: -25 }}>
             <Typography variant='h5' component='h5' gutterBottom>
               {videoDetails?.snippet?.title}
             </Typography>
           </Stack>
 
-          <Avatar
-            sx={{ width: 80, height: 80 }}
-            src={channelLogo}
-            // src={videoDetails?.snippet?.thumbnails?.high?.url}
-          />
-          <Stack
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              // justifyContent: 'center',
-            }}
-          >
-            <Typography variant='h6' component='h6' gutterBottom>
-              {videoDetails?.snippet?.channelTitle}
-            </Typography>
-            <Typography>{subscribers}</Typography>
+          {/* Channel info: name and logo   */}
+          <Stack direction='row' alignItems='center' spacing={2}>
+            {videoDetails?.snippet?.thumbnails?.standard?.url && (
+              <Link to={`/channel/${videoDetails?.snippet?.channelId}/videos`}>
+                <Avatar
+                  sx={{ width: 80, height: 80 }}
+                  src={videoDetails?.snippet?.thumbnails?.standard?.url}
+                />
+              </Link>
+            )}
+
+            <Stack direction='column'>
+              {videoDetails?.snippet?.channelId && (
+                <Link
+                  to={`/channel/${videoDetails?.snippet?.channelId}/videos`}
+                >
+                  <Typography variant='h6' component='h6' gutterBottom>
+                    {videoDetails?.snippet?.channelTitle}
+                  </Typography>
+                </Link>
+              )}
+            </Stack>
           </Stack>
         </Stack>
-
         {/* description */}
         <Stack
           sx={{
