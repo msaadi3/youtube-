@@ -92,7 +92,7 @@ const Navbar = () => {
       <FormGroup>
         <FormControlLabel
           control={<Switch checked={checked} onChange={handleChange} />}
-          label={`${checked ? 'Full YouTube' : 'Distraction free YouTube'}`}
+          label={`${checked ? 'Distraction free YouTube' : 'Full YouTube`'}`}
         />
       </FormGroup>
     </Box>
