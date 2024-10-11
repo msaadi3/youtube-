@@ -270,7 +270,8 @@ const YouTubeVideoPlayer = () => {
               </Stack>
             </Stack>
 
-            <Box
+            {/* removed desc box for a while  */}
+            {/* <Box
               sx={{
                 backgroundColor: '#0f172a',
                 color: 'white',
@@ -289,7 +290,7 @@ const YouTubeVideoPlayer = () => {
               <Typography variant='body2'>
                 {videoDetails?.snippet?.description}
               </Typography>
-            </Box>
+            </Box> */}
           </Box>
         </Grid>
 
